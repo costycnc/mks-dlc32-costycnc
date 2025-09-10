@@ -18,5 +18,13 @@ Upload firmware .bin to mks dlc32 board with https://espressif.github.io/esptool
 
 Caricare il firmware .bin sulla scheda MKS DLC32 usando https://espressif.github.io/esptool-js/
 
+<img width="1045" height="580" alt="image" src="https://github.com/user-attachments/assets/2ffe3806-3093-4541-b5ee-62bfae0e59a3" />
+
+<img width="1188" height="712" alt="image" src="https://github.com/user-attachments/assets/d85141fc-2360-46be-8eb9-4dc271a82c64" />
+
+
+
+
+
 
 
