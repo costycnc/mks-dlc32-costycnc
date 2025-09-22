@@ -1,5 +1,7 @@
 # mks-dlc32-costycnc
 
+https://github.com/costycnc/esp32-micropython-with-mks-dlc32-board-costycnc/blob/main/esptool.exe
+
 ![1](https://github.com/user-attachments/assets/fe5df514-1983-4939-b390-785559e15af2)
 
 Download repository in your computer! Scarica repo in tuo computer!
