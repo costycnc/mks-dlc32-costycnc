@@ -169,6 +169,7 @@
 </head>
 <body style="background-color:#400000;color:white;">
 
+
 <!--Your text <input onchange="my()" type="text" id="litera">-->
 <button class="btn" onclick="my()"  style="display:none">>atopng</button>
 
@@ -179,6 +180,42 @@
 </svg>
 
 <!---------------- image to gcode                     ----------------------------->
+<div id="guideBox" style="
+  width: 100%;
+  background: linear-gradient(270deg, rgba(2, 29, 78, 0.681) 0%, rgba(31, 215, 232, 0.873) 60%);
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 20px white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+">
+
+  <p style="font-size:1rem; line-height:1.5;">
+    <strong>GUIDA RAPIDA PER IL PRIMO TAGLIO</strong><br><br>
+
+    1️⃣ Clicca questo pulsante 
+    <button onclick="costycncdesign(gcode_square);document.getElementById('gcode').value=gcode_square;">
+      <strong>SQUARE</strong>
+    </button><br>
+    Questo genera un quadrato di <strong>10 × 10 cm</strong> pronto per essere tagliato.<br><br>
+
+    2️⃣ Clicca il pulsante <strong>“Scrive on sdcard”</strong><br>
+    Il file viene scritto direttamente sulla SD che è già inserita nella tua macchina CNC.<br><br>
+
+    3️⃣ Ora premi il pulsante <strong>“EXECUTE costycnc.nc”</strong> sulla macchina<br>
+    per avviare il taglio del quadrato.<br><br>
+
+    4️⃣ Controlla che la macchina si muova correttamente<br>
+    e che il quadrato venga tagliato preciso e pulito.<br><br>
+  </p>
+
+  <button class="btn1" onclick="document.getElementById('guideBox').style.display='none';">
+    Nascondi Guida
+  </button>
+
+</div>
 
   <div class="row">
   <div class="column" >
@@ -257,6 +294,15 @@ dpi:
  
 
 <script>
+
+  const gcode_square = `M3 S500 F300
+G21 G90
+G92 X0 Y0
+G01 X0 Y0
+G01 X100 Y0
+G01 X100 Y100
+G01 X0 Y100
+G01 X0 Y0`;
 var svg1=document.getElementById("svg");
 var svg2=document.getElementById("svgcode");
 var nome=document.getElementById("nome");
