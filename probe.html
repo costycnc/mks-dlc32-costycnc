@@ -179,7 +179,7 @@
   Sorry, your browser does not support inline SVG.
 </svg>
 
-<!---------------- image to gcode                     ----------------------------->
+<!---------------- image to gcode                     ---------------------------- >
 <div id="guideBox" style="
   width: 100%;
   background: linear-gradient(270deg, rgba(2, 29, 78, 0.681) 0%, rgba(31, 215, 232, 0.873) 60%);
@@ -215,7 +215,7 @@
     Nascondi Guida
   </button>
 
-</div>
+</div-->
 
   <div class="row">
   <div class="column" >
@@ -273,7 +273,8 @@ dpi:
 
   </div>
   <div class="column" >
-      GCODE:<textarea cols="22" form="usrform1" id="gcode" name="textg" rows="6" onchange="costycncdesign(this.value)" class="btn1"></textarea><hr>
+      GCODE:<textarea cols="22" form="usrform1" id="gcode" name="textg" rows="6" onchange="costycncdesign(this.value)" class="btn1"></textarea>
+	  <button onclick="costycncdesign(gcode_square);document.getElementById('gcode').value=gcode_square;" class="btn"><strong>SQUARE</strong></button><hr>
 	  <button onclick="xhr();" class="btn">EXECUTE costycnc.nc</button><button onclick="savegcodetomks1();" class="btn">Scrive on SDCARD</button><hr>     
 	  <input type="file" id="flvalue" accept=".bmp,.jpg,.png,.svg" onchange="openFile(event)" class="btn"><hr>
 	  
