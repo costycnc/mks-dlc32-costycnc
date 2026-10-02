@@ -22,7 +22,9 @@ This repository bypasses complex local toolchain compilation (PlatformIO/Arduino
     * `$101 = 1024` (Y-axis steps/mm)
     * `$102 = 1024` (Z-axis steps/mm)
     When using a standard **16-tooth drive pulley** on the motor shaft, sending a command like `X100` instructs the CNC axis to travel exactly **10cm (100mm)** forward.
-  * **Watch the Video Tutorial:** `https://www*youtube*com/shorts/9iet-oZP_rM`
+   * **Watch the Video Tutorial:**
+    [![Unipolar 28byj-48 on MKS-DLC32 CostyCNC](https://img.youtube.com/vi/9iet-oZP_rM/0.jpg)](https://www.youtube.com/shorts/9iet-oZP_rM)
+
 
   #### 🔬 The Electronic Physics: Why PCB Trace Cutting ("Force Brute") is Unnecessary
   Unlike standard online tutorials that advocate for destructive mechanical manipulation (cutting the internal common center trace on the motor's PCB), the COSTYCNC method relies on pure circuit balance and Kirchhoff's Laws:
@@ -46,8 +48,13 @@ You do not need to install local desktop software. The firmware binaries can be 
 3. Select your target `.bin` firmware structure matching your physical stepper architecture (NEMA or 28BYJ).
 4. Flash the binary block to the MCU flash address range (`0x0`).
 
-### 2. Uploading WebUI Assets to ESP32 Flash
-Once the base firmware is running, upload the asset files (`index.html.gz`, `bordo.html`, etc.) via the controller's integrated Web Upload interface or micro-SD routing to activate the standalone wireless dashboard interface.
+---
+
+## 🔬 Monolithic Architecture & Embedded Deployment
+
+The provided `.bin` packages integrate the GRBL runtime engine, tuned motion parameters, and the complete wireless user interface into a single, unified flash block . For full details on binaries (`1000-nema.bin`, `1000-28byj.bin`), wiring/calibration guides, physical electronic principles based on Kirchhoff's laws, and installation steps, please refer to the complete documentation in the referenced source .
+
+* **Key Calibration Parameters:** Step resolution is pre-configured as `$100 = 1024`, `$101 = 1024`, and `$102 = 1024` (steps/mm)
 
 ---
 
