@@ -9,10 +9,29 @@ An optimized hardware deployment repository featuring custom compiled production
 This repository bypasses complex local toolchain compilation (PlatformIO/Arduino IDE) by provisioning plug-and-play binary structures and custom client-side web assets designed to host local user interfaces directly from the MCU's internal flash memory.
 
 ### 🔌 Real-Time Motion Profile Binaries
+
 * **`1000-nema.bin`:** Production firmware pre-configured with acceleration and step-generation metrics optimized for heavy bipolar industrial stepper motors (NEMA 17/23 series), ensuring high-torque continuous vector tracking.
 * **`1000-28byj.bin`:** Specialized low-cost deployment binary utilizing altered step/direction mapping and timing scaling matrices to drive unipolar 5V geared stepper motors (28BYJ-48), democratizing hardware access for DIY builds.
 
+  #### ⚙️ Connection & Calibration Guide / Cablaggio e Calibrazione (28BYJ-48)
+  With this setup, you can drive standard 5-wire unipolar 28BYJ-48 stepper motors directly using the 4-pin bipolar driver headers of the MKS-DLC32 board via software sequence scaling, without opening the motor casing.
+  
+  * **Physical Wire Re-mapping:** Cleanly cut only the RED wire (the central common VCC/Center-Tap line) to isolate the coils externally. Release the internal locking tabs within the JST connector housing, extract the remaining terminals, and swap the central PINK and YELLOW wire positions to align with the A+/A- and B+/B- phase sequence required by the A4988/DRV8825 drivers. Finally, trim away the empty 5th-pin plastic block to natively insert it into the 4-pin board header.
+  * **GRBL Calibration Matrix:** To achieve perfect hardware travel calibration, you must enforce these steps/mm parameters inside the controller:
+    * `$100 = 1024` (X-axis steps/mm)
+    * `$101 = 1024` (Y-axis steps/mm)
+    * `$102 = 1024` (Z-axis steps/mm)
+    When using a standard **16-tooth drive pulley** on the motor shaft, sending a command like `X100` instructs the CNC axis to travel exactly **10cm (100mm)** forward.
+  * **Watch the Video Tutorial:** `https://www*youtube*com/shorts/9iet-oZP_rM`
+
+  #### 🔬 The Electronic Physics: Why PCB Trace Cutting ("Force Brute") is Unnecessary
+  Unlike standard online tutorials that advocate for destructive mechanical manipulation (cutting the internal common center trace on the motor's PCB), the COSTYCNC method relies on pure circuit balance and Kirchhoff's Laws:
+  1. *Symmetric Partitioner Bridge:* When driven in a bipolar configuration with the red wire disconnected, the internal common center-tap node acts as a passive, isolated voltage divider.
+  2. *Opposing Current Matrix & Virtual Ground:* During execution sequences, when opposing current flows encounter each other at the center-tap (+1/2 VCC and -1/2 VCC), they mathematically neutralize each other. According to Kirchhoff's Node Law, the potential at this isolated floating node stabilizes as a virtual ground (0V differential). There is an encounter of opposite voltages at the center, but **it is NOT a short-circuit**.
+  3. *Zero Short-Circuit Risk:* Because the current must traverse the natural winding resistance of the copper coils (approx. 50-70 Ohms), it is strictly limited by Ohm's Law and the onboard driver ICs. There is no low-resistance path to actual external VCC or GND, making an internal short-circuit physically impossible.
+
 ### 🌐 Embedded Web Server Optimization (`index.html.gz`)
+
 * **Gzip Compression Footprint:** The primary control dashboard is pre-compressed into a Gzip binary block (`index.html.gz`). This reduces raw HTML/JavaScript asset payloads to minimal memory blocks, enabling instantaneous delivery across the local network from the internal ESP32 HTTP stateless web server.
 * **Edge UI Additions:** Includes dedicated localized boundary modules (`bordo.html`), dynamic material calibration layers (`probe.html`), and custom text geometry interpreters (`text.html`) that load dynamically inside the browser shell.
 
@@ -36,6 +55,7 @@ Once the base firmware is running, upload the asset files (`index.html.gz`, `bor
 * **MicroPython Alternative Logic:** For developers looking to run Python scripts directly on this hardware array, see our secondary core: [esp32-micropython-with-mks-dlc32-board-costycnc](https://github.com)
 
 *Developed by Costel Boboaca (costycnc) – Elevating standard 32-bit hardware into independent wireless CNC automation hubs.*
+
 
 
 # mks-dlc32-costycnc
