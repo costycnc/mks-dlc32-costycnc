@@ -1,7 +1,3 @@
-Certo. Vuoi **esattamente il testo Markdown grezzo**, quindi con `#`, `##`, `###`, `**`, backtick e link Markdown, pronto da copiare nel `README.md`.
-
-Ti riscriverei il README mantenendo quella struttura, ma correggendo i punti tecnici che abbiamo discusso:
-
 # MKS-DLC32 CostyCNC – Firmware & Wireless WebUI for Hot-Wire Foam Cutting
 
 Custom compiled firmware binaries (`.bin`) and embedded WebUI components for the **Makerbase MKS-DLC32 (ESP32)** controller, adapted by **CostyCNC** for low-cost CNC hot-wire foam cutting.
