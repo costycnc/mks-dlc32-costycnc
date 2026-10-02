@@ -1,14 +1,37 @@
 # MKS-DLC32 CostyCNC
 
-Custom **MKS-DLC32 / ESP32 firmware builds** prepared by CostyCNC for hot-wire foam cutters and other DIY CNC projects.
+Custom **MKS-DLC32 / ESP32 firmware builds** prepared by CostyCNC.
 
-The repository provides ready-to-flash `.bin` files with the firmware and the customized wireless WebUI already included.
+This repository is **not only for CostyCNC machines**. The MKS-DLC32 is a low-cost ESP32-based CNC controller that can be used as a starting point for many DIY CNC projects, including:
+
+- hot-wire foam cutters
+- laser machines
+- router/spindle CNC machines
+- other experimental CNC machines
+
+The repository provides ready-to-flash `.bin` firmware builds together with a customized WebUI.
 
 **No separate WebUI installation is required after flashing the provided firmware.**
 
 ---
 
-## Ready-to-use firmware
+## MKS-DLC32 as a DIY CNC controller
+
+The MKS-DLC32 provides the basic functions needed to control a DIY CNC machine:
+
+- stepper motor outputs
+- PWM output
+- Wi-Fi connectivity
+- browser-based WebUI
+- GRBL-based control
+
+The exact machine depends on the hardware connected to the controller and the GRBL settings used.
+
+This repository contains both **general MKS-DLC32 resources** and **CostyCNC-specific tested configurations**.
+
+---
+
+## Ready-to-use CostyCNC firmware
 
 | Firmware | Motor setup | $100 | $101 | $102 | CostyCNC |
 |---|---|---:|---:|---:|---|
@@ -72,11 +95,21 @@ text.html
 
 These files do **not** need to be uploaded separately when using the supplied `.bin` firmware.
 
-### Probe page
+### probe.html — CostyCNC Image to G-code
 
-The repository includes a dedicated:
+`probe.html` is a **CostyCNC-developed image-processing and G-code generation tool**.
 
-**[probe.html](https://github.com/costycnc/mks-dlc32-costycnc/blob/main/probe.html)**
+It can:
+
+1. start from a black-and-white image,
+2. extract the contours,
+3. search for the nearest points between contours,
+4. join contours into a continuous path,
+5. generate G-code for the CostyCNC hot-wire workflow.
+
+The nearest-point joining method is used to reduce unnecessary travel between separate contours.
+
+**probe.html is a CostyCNC tool; it is not a required part of the MKS-DLC32 controller and is not needed for every DIY CNC application.**
 
 ---
 
@@ -105,7 +138,7 @@ The PWM output is not limited to hot-wire cutting. Its actual application depend
 | Media | NEMA17 | `1000-nema.bin` |
 | XBig | NEMA17 | `1000-nema.bin` |
 
-The firmware is not restricted to CostyCNC machines. The MKS-DLC32 can be configured for other DIY CNC applications by changing the GRBL parameters.
+These machines are examples of how the MKS-DLC32 can be used. The controller itself is not restricted to CostyCNC machines.
 
 ---
 
@@ -129,24 +162,20 @@ For the complete CostyCNC installation procedure:
 
 ---
 
-## Other DIY CNC applications
+## Using the MKS-DLC32 for another DIY CNC
 
-The MKS-DLC32 is an ESP32-based CNC controller with:
+You do not need to own a CostyCNC machine to use the ideas and resources in this repository.
 
-- stepper motor outputs
-- PWM output
-- Wi-Fi connectivity
-- WebUI
-- GRBL-based control
+For a new DIY CNC project, the MKS-DLC32 can be used as the controller and configured according to the machine's:
 
-The same controller can therefore be used for different DIY machines, including:
+- motors
+- drivers
+- microstepping
+- belt, screw or other transmission
+- steps/mm
+- PWM-controlled hardware
 
-- hot-wire foam cutters
-- laser machines
-- router/spindle CNC machines
-- experimental CNC projects
-
-The firmware in this repository provides **tested starting configurations**, rather than a universal configuration for every machine.
+The CostyCNC firmware files are useful as **tested starting points**, but the GRBL parameters should be adapted to the actual machine.
 
 ---
 
@@ -171,7 +200,7 @@ The `.bin` files are the final compiled firmware builds.
 
 ### WebUI resources
 
-The HTML files are the resources used for the customized WebUI.
+The HTML files are resources used by the customized WebUI.
 
 The final firmware already contains the WebUI required by the controller.
 
