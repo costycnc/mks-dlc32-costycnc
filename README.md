@@ -1,65 +1,318 @@
-# MKS-DLC32 CostyCNC – Embedded Firmware Ecosystem & Wireless WebUI
+Certo. Vuoi **esattamente il testo Markdown grezzo**, quindi con `#`, `##`, `###`, `**`, backtick e link Markdown, pronto da copiare nel `README.md`.
 
-An optimized hardware deployment repository featuring custom compiled production binaries (`.bin`) and embedded file-system components for the **Makerbase MKS-DLC32 (ESP32)** controller board, tailored specifically for high-efficiency hot wire foam cutters.
+Ti riscriverei il README mantenendo quella struttura, ma correggendo i punti tecnici che abbiamo discusso:
+
+# MKS-DLC32 CostyCNC – Firmware & Wireless WebUI for Hot-Wire Foam Cutting
+
+Custom compiled firmware binaries (`.bin`) and embedded WebUI components for the **Makerbase MKS-DLC32 (ESP32)** controller, adapted by **CostyCNC** for low-cost CNC hot-wire foam cutting.
+
+The project turns the MKS-DLC32 into a simple wireless controller for CostyCNC hot-wire machines, allowing the machine to be controlled directly from a web browser without requiring a desktop CNC application.
 
 ---
 
 ## 🔬 Technical Architecture & Embedded Deployment
 
-This repository bypasses complex local toolchain compilation (PlatformIO/Arduino IDE) by provisioning plug-and-play binary structures and custom client-side web assets designed to host local user interfaces directly from the MCU's internal flash memory.
+This repository provides ready-to-use firmware binaries and embedded web interface components, avoiding the need for users to build the firmware locally with PlatformIO or the Arduino IDE.
 
-### 🔌 Real-Time Motion Profile Binaries
+The MKS-DLC32 runs the motion-control firmware while its ESP32 provides the Wi-Fi connection and hosts the CostyCNC browser interface.
 
-* **`1000-nema.bin`:** Production firmware pre-configured with acceleration and step-generation metrics optimized for heavy bipolar industrial stepper motors (NEMA 17/23 series), ensuring high-torque continuous vector tracking.
-* **`1000-28byj.bin`:** Specialized low-cost deployment binary utilizing altered step/direction mapping and timing scaling matrices to drive unipolar 5V geared stepper motors (28BYJ-48), democratizing hardware access for DIY builds.
+The basic architecture is:
 
-  #### ⚙️ Connection & Calibration Guide / Cablaggio e Calibrazione (28BYJ-48)
-  With this setup, you can drive standard 5-wire unipolar 28BYJ-48 stepper motors directly using the 4-pin bipolar driver headers of the MKS-DLC32 board via software sequence scaling, without opening the motor casing.
-  
-  * **Physical Wire Re-mapping:** Cleanly cut only the RED wire (the central common VCC/Center-Tap line) to isolate the coils externally. Release the internal locking tabs within the JST connector housing, extract the remaining terminals, and swap the central PINK and YELLOW wire positions to align with the A+/A- and B+/B- phase sequence required by the A4988/DRV8825 drivers. Finally, trim away the empty 5th-pin plastic block to natively insert it into the 4-pin board header.
-  * **GRBL Calibration Matrix:** To achieve perfect hardware travel calibration, you must enforce these steps/mm parameters inside the controller:
-    * `$100 = 1024` (X-axis steps/mm)
-    * `$101 = 1024` (Y-axis steps/mm)
-    * `$102 = 1024` (Z-axis steps/mm)
-    When using a standard **16-tooth drive pulley** on the motor shaft, sending a command like `X100` instructs the CNC axis to travel exactly **10cm (100mm)** forward.
-   * **Watch the Video Tutorial:**
-    [![Unipolar 28byj-48 on MKS-DLC32 CostyCNC](https://img.youtube.com/vi/9iet-oZP_rM/0.jpg)](https://www.youtube.com/shorts/9iet-oZP_rM)
-
-
-  #### 🔬 The Electronic Physics: Why PCB Trace Cutting ("Force Brute") is Unnecessary
-  Unlike standard online tutorials that advocate for destructive mechanical manipulation (cutting the internal common center trace on the motor's PCB), the COSTYCNC method relies on pure circuit balance and Kirchhoff's Laws:
-  1. *Symmetric Partitioner Bridge:* When driven in a bipolar configuration with the red wire disconnected, the internal common center-tap node acts as a passive, isolated voltage divider.
-  2. *Opposing Current Matrix & Virtual Ground:* During execution sequences, when opposing current flows encounter each other at the center-tap (+1/2 VCC and -1/2 VCC), they mathematically neutralize each other. According to Kirchhoff's Node Law, the potential at this isolated floating node stabilizes as a virtual ground (0V differential). There is an encounter of opposite voltages at the center, but **it is NOT a short-circuit**.
-  3. *Zero Short-Circuit Risk:* Because the current must traverse the natural winding resistance of the copper coils (approx. 50-70 Ohms), it is strictly limited by Ohm's Law and the onboard driver ICs. There is no low-resistance path to actual external VCC or GND, making an internal short-circuit physically impossible.
-
-### 🌐 Embedded Web Server Optimization (`index.html.gz`)
-
-* **Gzip Compression Footprint:** The primary control dashboard is pre-compressed into a Gzip binary block (`index.html.gz`). This reduces raw HTML/JavaScript asset payloads to minimal memory blocks, enabling instantaneous delivery across the local network from the internal ESP32 HTTP stateless web server.
-* **Edge UI Additions:** Includes dedicated localized boundary modules (`bordo.html`), dynamic material calibration layers (`probe.html`), and custom text geometry interpreters (`text.html`) that load dynamically inside the browser shell.
+```text
+Computer / Smartphone
+        │
+        │ Wi-Fi
+        ▼
+┌──────────────────────┐
+│   MKS-DLC32 / ESP32  │
+│                      │
+│   GRBL Motion Control│
+│   CostyCNC WebUI     │
+└──────────┬───────────┘
+           │
+           ▼
+     Stepper Drivers
+           │
+           ▼
+      CNC Mechanics
+           │
+           ▼
+    Hot-Wire Foam Cutter
+```
 
 ---
 
-## 🛠️ Step-by-Step Installation Guide / Guida all'Installazione
+## 🔌 Real-Time Motion Profile Binaries
 
-### 1. Wireless Web Interface Flash (Metodo via Browser)
-You do not need to install local desktop software. The firmware binaries can be synthesized directly to your Makerbase board via standard web serial protocols.
-1. Connect the MKS-DLC32 board to your computer via USB.
-2. Launch the Web-Serial browser installer utility: [Espressif Web Tool (esptool-js)](https://github.io)
-3. Select your target `.bin` firmware structure matching your physical stepper architecture (NEMA or 28BYJ).
-4. Flash the binary block to the MCU flash address range (`0x0`).
+### `1000-nema.bin`
 
----
+Production firmware configuration for CostyCNC machines using conventional bipolar stepper motors such as **NEMA 17 or NEMA 23**.
 
-## 🔬 Monolithic Architecture & Embedded Deployment
+The actual steps/mm calibration depends on the mechanical transmission, pulley, belt, screw, motor and microstepping configuration of the machine.
 
-The provided `.bin` packages integrate the GRBL runtime engine, tuned motion parameters, and the complete wireless user interface into a single, unified flash block . For full details on binaries (`1000-nema.bin`, `1000-28byj.bin`), wiring/calibration guides, physical electronic principles based on Kirchhoff's laws, and installation steps, please refer to the complete documentation in the referenced source .
+### `1000-28byj.bin`
 
-* **Key Calibration Parameters:** Step resolution is pre-configured as `$100 = 1024`, `$101 = 1024`, and `$102 = 1024` (steps/mm)
+Specialized firmware configuration for CostyCNC machines using inexpensive **28BYJ-48 geared stepper motors** with **A4988 bipolar drivers**.
+
+This configuration allows the 28BYJ-48 to be used without opening or permanently modifying its internal PCB.
 
 ---
 
-## 📋 Cross-Repository References
-* **MicroPython Alternative Logic:** For developers looking to run Python scripts directly on this hardware array, see our secondary core: [esp32-micropython-with-mks-dlc32-board-costycnc](https://github.com)
+## ⚙️ 28BYJ-48 + A4988 Configuration
+
+The CostyCNC configuration uses:
+
+* 28BYJ-48 geared stepper motor
+* internal motor gearbox
+* A4988 bipolar stepper driver
+* **1/16 microstepping**
+* GT2 timing belt
+* **16-tooth GT2 pulley**
+
+The 28BYJ-48 is normally supplied as a 5-wire unipolar motor.
+
+For the CostyCNC configuration, the common center-tap wire is disconnected externally and the two coil pairs are connected to the four outputs of the A4988.
+
+### Wiring modification
+
+The motor does **not** need to be opened.
+
+The CostyCNC wiring procedure is:
+
+1. Disconnect the **red center-tap wire**.
+2. Identify the two coil pairs.
+3. Reposition the required wires in the connector according to the CostyCNC wiring sequence.
+4. Connect the four coil wires to the A4988 motor outputs.
+5. Configure the A4988 for **1/16 microstepping**.
+
+> **Important:** wire colours can vary between different 28BYJ-48 manufacturers and versions. Always verify the coil pairs before connecting the motor.
+
+### Video tutorial
+
+[Unipolar 28BYJ-48 on MKS-DLC32 CostyCNC](https://www.youtube.com/shorts/9iet-oZP_rM)
+
+---
+
+## 📐 Why `$100 = 1024`?
+
+The value `$100 = 1024` is not simply a property of the 28BYJ-48 motor.
+
+It is the result of the complete CostyCNC electrical and mechanical configuration:
+
+* 28BYJ-48 geared motor
+* internal reduction gearbox
+* A4988 driver
+* **1/16 microstepping**
+* GT2 belt with **2 mm pitch**
+* **16-tooth pulley**
+
+The 16-tooth GT2 pulley produces:
+
+```text
+16 × 2 mm = 32 mm
+```
+
+of linear movement per pulley revolution.
+
+Taking into account the motor's internal gearbox and the **1/16 microstepping configuration of the A4988**, the CostyCNC setup is calibrated to:
+
+```text
+$100=1024
+$101=1024
+$102=1024
+```
+
+For the tested CostyCNC mechanical configuration:
+
+```text
+X100 → 100 mm
+Y100 → 100 mm
+Z100 → 100 mm
+```
+
+The value should nevertheless be verified on the individual machine because 28BYJ-48 motors and gearboxes can vary between manufacturers.
+
+### CostyCNC 28BYJ-48 calibration
+
+| Component                  | Configuration      |
+| -------------------------- | ------------------ |
+| Motor                      | 28BYJ-48           |
+| Internal gearbox           | approximately 1:64 |
+| Driver                     | A4988              |
+| Microstepping              | 1/16               |
+| Belt                       | GT2                |
+| Belt pitch                 | 2 mm               |
+| Pulley                     | 16 teeth           |
+| Pulley movement/revolution | 32 mm              |
+| GRBL calibration           | **1024 steps/mm**  |
+
+---
+
+## 🔬 Why No Internal PCB Modification Is Required
+
+Many 28BYJ-48 bipolar conversion tutorials modify the motor's internal PCB.
+
+The CostyCNC configuration does not require this.
+
+The center-tap is disconnected externally, leaving the two coil pairs available for the bipolar A4988 driver.
+
+The important requirement is correct identification of the two coil pairs and correct connection to the A4988 outputs.
+
+This makes it possible to use the inexpensive geared 28BYJ-48 motor without cutting traces or modifying the motor's internal PCB.
+
+---
+
+## 🌐 Embedded Wireless WebUI
+
+The CostyCNC WebUI is designed to run directly from the ESP32 inside the MKS-DLC32.
+
+The main interface is provided as:
+
+```text
+index.html.gz
+```
+
+The compressed HTML/JavaScript payload reduces the amount of flash storage required by the embedded interface.
+
+Additional CostyCNC web components include:
+
+* `bordo.html`
+* `probe.html`
+* `text.html`
+
+These provide additional browser-based functions for machine control, calibration and text-related operations.
+
+The user connects to the MKS-DLC32 through Wi-Fi and opens the interface from a normal web browser.
+
+No dedicated desktop CNC application is required for the basic browser-based workflow.
+
+---
+
+## 🧩 Repository Files
+
+| File             | Description                                               |
+| ---------------- | --------------------------------------------------------- |
+| `1000-nema.bin`  | Firmware configuration for NEMA stepper installations     |
+| `1000-28byj.bin` | Firmware configuration for 28BYJ-48 + A4988 installations |
+| `index.html.gz`  | Compressed embedded CostyCNC WebUI                        |
+| `bordo.html`     | Additional WebUI functions                                |
+| `probe.html`     | Calibration/probing functions                             |
+| `text.html`      | Text-related WebUI functions                              |
+| `read_4mb.b`     | Flash/read utility                                        |
+| `MKSLaserTool`   | Supporting MKS-DLC32 utility                              |
+
+---
+
+## 🛠️ Installation
+
+### 1. Connect the MKS-DLC32
+
+Connect the MKS-DLC32 to the computer using USB.
+
+### 2. Select the correct firmware
+
+Choose the firmware according to the motor configuration:
+
+```text
+1000-nema.bin
+```
+
+or:
+
+```text
+1000-28byj.bin
+```
+
+### 3. Flash the ESP32
+
+Use a compatible ESP32 browser-based flashing tool such as [Espressif Web Tools](https://espressif.github.io/esptool-js/).
+
+Flash the firmware according to the memory layout required by the specific binary.
+
+> **Important:** do not assume that every `.bin` file should always be written at `0x0`. A complete ESP32 flash image and a firmware-only binary can require different flash addresses. Follow the instructions corresponding to the supplied image.
+
+### 4. Connect through Wi-Fi
+
+After flashing, power-cycle the MKS-DLC32 and connect to its Wi-Fi network.
+
+Open the CostyCNC WebUI from a browser.
+
+---
+
+## ⚠️ Calibration and Hardware Safety
+
+Before operating the machine:
+
+* verify the motor wiring
+* verify the A4988 microstepping configuration
+* verify motor current limiting
+* test each axis at low speed
+* verify the actual travel distance
+* verify the direction of each axis
+* make sure the machine can move freely
+
+Do not assume that the calibration values from one mechanical configuration are correct for another machine.
+
+---
+
+## 🎯 Why Use an MKS-DLC32 for Hot-Wire Cutting?
+
+A hot-wire foam cutter has different requirements from a milling machine.
+
+There is no cutting tool applying significant mechanical force to the material and no spindle is required.
+
+CostyCNC therefore focuses on a simple architecture:
+
+```text
+Simple mechanics
+       +
+Low-cost stepper motors
+       +
+MKS-DLC32 / ESP32
+       +
+Wi-Fi WebUI
+       +
+Hot wire
+```
+
+The result is a compact controller that can be operated directly from a browser.
+
+---
+
+## 🔗 Related CostyCNC Projects
+
+The MKS-DLC32 is part of a larger CostyCNC software ecosystem.
+
+Related projects include:
+
+* [MKS-DLC32 Custom WebUI and Web Commands](https://github.com/costycnc)
+* [CostyCNC Firmware](https://github.com/costycnc)
+* [ESP32 MicroPython with MKS-DLC32](https://github.com/costycnc)
+
+See the [CostyCNC GitHub repositories](https://github.com/costycnc) for additional projects and experiments.
+
+---
+
+## 👤 Author
+
+**Costel Boboaca – CostyCNC**
+
+CostyCNC develops low-cost CNC hot-wire foam-cutting machines and software tools for controlling them.
+
+Website: [costycnc.it](https://www.costycnc.it/)
+
+GitHub: [github.com/costycnc](https://github.com/costycnc)
+
+---
+
+## 💡 CostyCNC Philosophy
+
+> **Maximum result with minimum consumption.**
+
+The objective is not to make the system more complicated.
+
+The objective is to use simple mechanics, inexpensive electronics and browser-based software to obtain a practical CNC hot-wire foam-cutting machine.
+
 
 *Developed by Costel Boboaca (costycnc) – Elevating standard 32-bit hardware into independent wireless CNC automation hubs.*
 
