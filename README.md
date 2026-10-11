@@ -1,5 +1,8 @@
 # MKS-DLC32 CostyCNC
 
+           Board Version: MKS DLC32 CNC V2.0
+           Firmware: V2.1.0(8M.H24.20220511)
+
 Custom **MKS-DLC32 / ESP32 firmware builds and browser tools** developed and tested by CostyCNC.
 
 This repository is **not only for CostyCNC machines**. The MKS-DLC32 is a low-cost ESP32-based CNC controller that can be used for many DIY machines, including:
